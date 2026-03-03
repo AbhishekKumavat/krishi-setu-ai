@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     if (error || !storedUser) {
       console.error('Supabase insert error:', error);
       return NextResponse.json(
-        { error: 'Failed to create user in database.' },
+        { error: `Failed to create user in database: ${error?.message || JSON.stringify(error) || 'Unknown error'}` },
         { status: 500 }
       );
     }
