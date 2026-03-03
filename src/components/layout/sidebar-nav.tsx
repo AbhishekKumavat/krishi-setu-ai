@@ -22,8 +22,8 @@ import {
   Leaf,
   LogIn,
   LogOut,
-  MessageSquare,
   ShoppingCart,
+  ClipboardList,
   Sprout,
   TrendingUp,
   User,
@@ -61,9 +61,9 @@ const platformNav = [
     requiresAuth: true,
   },
   {
-    href: '/messages',
-    label: 'Messages',
-    icon: MessageSquare,
+    href: '/orders',
+    label: 'Orders',
+    icon: ClipboardList,
     disabled: false,
     requiresAuth: true,
   },
@@ -72,6 +72,10 @@ const platformNav = [
 const userNav = [
   { href: '/profile', label: 'Profile', icon: User, disabled: false, requiresAuth: true },
   { href: '/settings', label: 'Settings', icon: Settings, disabled: false, requiresAuth: true },
+];
+
+const retailerNav = [
+  { href: '/retailer/register', label: 'Register as Retailer', icon: UserPlus, disabled: false },
 ];
 
 type NavCategoryProps = {
@@ -114,9 +118,8 @@ function NavCategory({ title, items, user, pathname }: NavCategoryProps) {
                 asChild
                 isActive={pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/')}
                 disabled={item.disabled}
-                tooltip={item.label}
               >
-                <Link href={item.href}>
+                <Link href={item.href} prefetch={false}>
                   <item.icon />
                   <span>{item.label}</span>
                 </Link>
@@ -134,9 +137,8 @@ function NavCategory({ title, items, user, pathname }: NavCategoryProps) {
                 asChild
                 isActive={pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/')}
                 disabled={item.disabled}
-                tooltip={item.label}
               >
-                <Link href={item.href}>
+                <Link href={item.href} prefetch={false}>
                   <item.icon />
                   <span className="sr-only">{item.label}</span>
                 </Link>
@@ -166,7 +168,7 @@ export function SidebarNav() {
         </div>
       </SidebarHeader>
       <SidebarContent className="p-2 space-y-2">
-        {pathname.startsWith('/customer-marketplace') ? (
+        {pathname.startsWith('/customer-marketplace') || pathname.startsWith('/customer-orders') ? (
           <>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -178,14 +180,37 @@ export function SidebarNav() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === '/orders'} tooltip="My Orders" disabled>
-                  <Link href="#">
+                <SidebarMenuButton asChild isActive={pathname === '/customer-orders'} tooltip="My Orders">
+                  <Link href="/customer-orders">
                     <Sprout />
                     <span>My Orders</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
+            <NavCategory title="Account" items={userNav} user={user} pathname={pathname} />
+          </>
+        ) : pathname.startsWith('/retailer') ? (
+          <>
+            <SidebarMenu>
+              {mainNav.map(item => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    disabled={item.disabled}
+                    tooltip={item.label}
+                  >
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+
+            <NavCategory title="Manage" items={retailerNav} user={user} pathname={pathname} />
             <NavCategory title="Account" items={userNav} user={user} pathname={pathname} />
           </>
         ) : (

@@ -1,46 +1,83 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { supabase } from '@/lib/supabase';
 
-export async function POST(req: NextRequest) {
-    try {
-        const { email, password, username, displayName, region, isFarmer } = await req.json();
+export async function POST(request: Request) {
+  try {
+    const { email, password, username, displayName, isFarmer = false, region } = await request.json();
 
-        if (!email || !password || !username || !displayName) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-        }
-
-        // Check if email or username already exists
-        const [existingEmail] = await db.select().from(users).where(eq(users.email, email)).limit(1);
-        if (existingEmail) {
-            return NextResponse.json({ error: 'Email already in use' }, { status: 409 });
-        }
-
-        const [existingUsername] = await db.select().from(users).where(eq(users.username, username)).limit(1);
-        if (existingUsername) {
-            return NextResponse.json({ error: 'Username already taken' }, { status: 409 });
-        }
-
-        const passwordHash = await bcrypt.hash(password, 12);
-
-        const [newUser] = await db
-            .insert(users)
-            .values({
-                email,
-                username,
-                displayName,
-                passwordHash,
-                region: region || '',
-                role: isFarmer ? 'farmer' : 'user',
-                isVerified: false,
-            })
-            .returning({ id: users.id, email: users.email, username: users.username });
-
-        return NextResponse.json({ success: true, user: newUser }, { status: 201 });
-    } catch (error: any) {
-        console.error('Signup error:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    // Validate input
+    if (!email || !password || !username || !displayName || !region) {
+      return NextResponse.json(
+        { error: 'Email, password, username, displayName, and region are required' },
+        { status: 400 }
+      );
     }
+
+    // Check if user already exists
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'User with this email already exists' },
+        { status: 409 }
+      );
+    }
+
+    // Hash the password
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    const userType = isFarmer ? 'farmer' : 'customer';
+
+    // Create the new user in Supabase
+    const { data: storedUser, error } = await supabase
+      .from('users')
+      .insert([{
+        email,
+        username,
+        display_name: displayName,
+        password_hash: passwordHash,
+        role: userType,
+        region: region || '',
+        is_verified: false
+      }])
+      .select()
+      .single();
+
+    if (error || !storedUser) {
+      console.error('Supabase insert error:', error);
+      return NextResponse.json(
+        { error: 'Failed to create user in database.' },
+        { status: 500 }
+      );
+    }
+
+    // Return success response with the created user (excluding sensitive data)
+    return NextResponse.json(
+      {
+        message: 'User registered successfully!',
+        user: {
+          id: storedUser.id,
+          email: storedUser.email,
+          username: storedUser.username,
+          name: storedUser.display_name,
+          role: storedUser.role,
+          region: storedUser.region,
+          isVerified: storedUser.is_verified,
+        }
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Registration error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 }

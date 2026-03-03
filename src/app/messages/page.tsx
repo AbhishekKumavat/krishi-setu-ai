@@ -1,6 +1,6 @@
 'use client';
 import { MessagesClient } from '@/components/features/messages-client';
-import { useUser } from '@/firebase';
+import { useUser } from '@/hooks/use-user';
 import { Card, CardContent } from '@/components/ui/card';
 import { Suspense } from 'react';
 

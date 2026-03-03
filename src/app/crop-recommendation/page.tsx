@@ -1,4 +1,20 @@
-import { SettingsCropRecommendation } from "@/components/features/settings-crop-recommendation";
+'use client';
+
+import dynamic from "next/dynamic";
+import { Loader2 } from "lucide-react";
+
+const SettingsCropRecommendation = dynamic(
+    () => import("@/components/features/settings-crop-recommendation").then(mod => mod.SettingsCropRecommendation),
+    {
+        loading: () => (
+            <div className="flex justify-center flex-col gap-4 items-center py-20">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <p className="animate-pulse">Loading AI Interface...</p>
+            </div>
+        ),
+        ssr: false
+    }
+);
 
 export default function CropRecommendationPage() {
     return (

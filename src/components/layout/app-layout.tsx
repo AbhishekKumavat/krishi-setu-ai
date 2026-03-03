@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Header } from './header';
 import { SidebarNav } from './sidebar-nav';
+import KrishiChatbot from '@/components/features/krishi-chatbot';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -24,6 +25,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <Header />
         <main className="p-4 sm:p-6 lg:p-8 bg-background">{children}</main>
+        <KrishiChatbot />
       </SidebarInset>
     </SidebarProvider>
   );

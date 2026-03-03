@@ -60,11 +60,8 @@ export default function LoginPage() {
           description: 'Invalid email or password.',
         });
       } else {
-        if (loginRole === 'customer') {
-          router.push('/customer-marketplace');
-        } else {
-          router.push('/');
-        }
+        // Redirect based on the user's actual role after successful login
+        router.push('/');
         router.refresh();
       }
     } catch (error: any) {
@@ -91,8 +88,8 @@ export default function LoginPage() {
           <Tabs value={loginRole} onValueChange={setLoginRole} className="w-full mb-6">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="farmer">Farmer</TabsTrigger>
-              <TabsTrigger value="buyer">Buyer</TabsTrigger>
               <TabsTrigger value="customer">Customer</TabsTrigger>
+              <TabsTrigger value="retailer">Retailer</TabsTrigger>
             </TabsList>
           </Tabs>
 

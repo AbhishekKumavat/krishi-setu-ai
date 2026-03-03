@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -37,22 +37,50 @@ const formSchema = z.object({
   date: z.date().optional().default(new Date()),
   quantity: z.coerce.number().min(1).default(1000),
 });
-
 export function PricePredictionClient() {
-  const [result, setResult] = useState<PredictCropPriceOutput | null>(null);
+  const [result, setResult] = useState<PredictCropPriceOutput | null>(() => {
+    if (typeof window !== 'undefined') {
+      const cached = sessionStorage.getItem('pricePredCache');
+      if (cached) return JSON.parse(cached);
+    }
+    return null;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+  const defaultValues = (() => {
+    if (typeof window !== 'undefined') {
+      const cached = sessionStorage.getItem('pricePredForm');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.date) parsed.date = new Date(parsed.date);
+        return parsed;
+      }
+    }
+    return {
       region: '',
       crop: '',
       variety: 'FAQ',
       date: new Date(),
       quantity: 1000,
-    }
+    };
+  })();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues
   });
+
+  useEffect(() => {
+    if (result) {
+      sessionStorage.setItem('pricePredCache', JSON.stringify(result));
+    }
+  }, [result]);
+
+  const formValues = form.watch();
+  useEffect(() => {
+    sessionStorage.setItem('pricePredForm', JSON.stringify(formValues));
+  }, [formValues]);
 
   const currentQuantityKg = form.watch('quantity') || 1000;
 
@@ -128,13 +156,13 @@ export function PricePredictionClient() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} className="w-full bg-[#16a34a] hover:bg-green-700 text-white font-semibold">
+              <Button type="submit" disabled={isLoading} className="w-full bg-[#16a34a] hover:bg-green-700 text-white font-semibold flex items-center justify-center">
                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <TrendingUp className="mr-2 h-4 w-4" />
                 )}
-                Analyze Profit
+                <span>Analyze Profit</span>
               </Button>
             </form>
           </Form>

@@ -9,7 +9,8 @@ import Link from 'next/link';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { usePathname } from 'next/navigation';
-import type { User } from 'firebase/auth';
+// import type { User } from 'firebase/auth';
+import type { UserProfile } from '@/types';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, Timestamp } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -29,7 +30,7 @@ type ConversationDoc = {
 }
 
 interface MessagesClientProps {
-    currentUser: User;
+    currentUser: UserProfile;
 }
 
 export function MessagesClient({ currentUser }: MessagesClientProps) {

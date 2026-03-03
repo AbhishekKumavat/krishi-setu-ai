@@ -47,7 +47,7 @@ export function CommunityListClient() {
             id: 'jalgaon-hub',
             name: 'Jalgaon Farmers',
             description: 'A community for farmers in Jalgaon to discuss Banana, Cotton, and local market trends.',
-            bannerUrl: 'https://images.unsplash.com/photo-1595859702816-43c3d52d9b62?auto=format&fit=crop&q=80&w=600',
+            bannerUrl: '/jalgaon.jpg',
             creatorId: 'system',
             creatorUsername: 'KrishiSetu',
             postCount: 142,

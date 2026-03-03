@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@/firebase';
+import { useUser } from '@/hooks/use-user';
 import { useToast } from '@/hooks/use-toast';
 import { Timestamp } from 'firebase/firestore';
 import { MessageSquare, MoreVertical, Trash2, Edit, Share2, Tag, Tractor, Wrench } from 'lucide-react';

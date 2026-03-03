@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -36,7 +36,20 @@ type RecommendationResponse = {
 
 export function SettingsCropRecommendation() {
     const [isLoading, setIsLoading] = useState(false);
-    const [response, setResponse] = useState<RecommendationResponse | null>(null);
+    const [response, setResponse] = useState<RecommendationResponse | null>(() => {
+        if (typeof window !== 'undefined') {
+            const cached = sessionStorage.getItem('cropRecCache');
+            if (cached) return JSON.parse(cached);
+        }
+        return null;
+    });
+
+    useEffect(() => {
+        if (response && !response.error) {
+            sessionStorage.setItem('cropRecCache', JSON.stringify(response));
+        }
+    }, [response]);
+
     const { toast } = useToast();
 
     const handleGetRecommendation = () => {
