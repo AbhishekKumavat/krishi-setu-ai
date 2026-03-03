@@ -92,10 +92,20 @@ CREATE TABLE IF NOT EXISTS public.comments (
 );
 
 -- Note: We add the foreign key for pinned_comment_id AFTER the comments table is created
-ALTER TABLE public.posts 
-  ADD CONSTRAINT fk_pinned_comment 
-  FOREIGN KEY (pinned_comment_id) 
-  REFERENCES public.comments(id) ON DELETE SET NULL;
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.table_constraints
+        WHERE constraint_schema = 'public' AND table_name = 'posts' AND constraint_name = 'fk_pinned_comment'
+    ) THEN
+        ALTER TABLE public.posts
+          ADD CONSTRAINT fk_pinned_comment
+          FOREIGN KEY (pinned_comment_id)
+          REFERENCES public.comments(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
 
 -- Relax RLS Policies for Community Tables
 ALTER TABLE public.communities DISABLE ROW LEVEL SECURITY;

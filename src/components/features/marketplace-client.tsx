@@ -572,29 +572,29 @@ export function MarketplaceClient() {
 
                     {/* AI Recommendation Section */}
                     {aiRecommendedRetailer && (
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5">
+                        <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
                             <div className="flex items-start gap-4">
                                 <div className="bg-primary p-3 rounded-lg flex-shrink-0">
-                                    <Brain className="h-6 w-6 text-white" />
+                                    <Brain className="h-6 w-6 text-primary-foreground" />
                                 </div>
                                 <div>
                                     <h3 className="font-bold font-headline text-lg text-primary flex items-center gap-2">
                                         AI Recommendation
-                                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">Best Deal</Badge>
+                                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">Best Deal</Badge>
                                     </h3>
                                     <p className="text-muted-foreground mt-1">
                                         Based on price, distance, ratings, and verification status,
                                         <span className="font-semibold text-foreground"> {aiRecommendedRetailer.name}</span> offers the best value for your {selectedCrop}.
                                     </p>
-                                    <div className="mt-3 flex flex-wrap gap-4 pt-2 border-t">
+                                    <div className="mt-3 flex flex-wrap gap-4 pt-2 border-t border-border">
                                         <div className="flex items-center gap-2">
-                                            <TrendingUp className="h-4 w-4 text-green-600" />
+                                            <TrendingUp className="h-4 w-4 text-emerald-500" />
                                             <span className="text-sm">
-                                                Best Net Profit: <span className="font-bold">₹{userLoc && aiRecommendedRetailer.netProfit ? aiRecommendedRetailer.netProfit.toFixed(0) : aiRecommendedRetailer.offeredPrice}/q</span>
+                                                Best Net Profit: <span className="font-bold text-emerald-600 dark:text-emerald-400">₹{userLoc && aiRecommendedRetailer.netProfit ? aiRecommendedRetailer.netProfit.toFixed(0) : aiRecommendedRetailer.offeredPrice}/q</span>
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <MapPin className="h-4 w-4 text-blue-600" />
+                                            <MapPin className="h-4 w-4 text-blue-500" />
                                             <span className="text-sm">
                                                 Distance: <span className="font-bold">{userLoc && aiRecommendedRetailer.distance ? `${aiRecommendedRetailer.distance.toFixed(1)} km` : 'N/A'}</span>
                                             </span>
