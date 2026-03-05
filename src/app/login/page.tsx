@@ -18,7 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Mail, KeyRound, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
@@ -44,12 +44,26 @@ export default function LoginPage() {
     defaultValues: { email: '', password: '' },
   });
 
+  useEffect(() => {
+    if (loginRole === 'farmer') {
+      form.setValue('email', 'ramesh@gmail.com');
+      form.setValue('password', '1234');
+    } else if (loginRole === 'customer') {
+      form.setValue('email', 'customer@test.com');
+      form.setValue('password', 'password123');
+    } else if (loginRole === 'retailer') {
+      form.setValue('email', 'retailer@test.com');
+      form.setValue('password', 'password123');
+    }
+  }, [loginRole, form]);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
       const result = await signIn('credentials', {
         email: values.email,
         password: values.password,
+        role: loginRole,
         redirect: false,
       });
 

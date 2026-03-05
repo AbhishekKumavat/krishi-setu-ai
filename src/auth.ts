@@ -91,6 +91,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             credentials: {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' },
+                role: { label: 'Role', type: 'text' },
             },
             async authorize(credentials) {
                 if (!credentials || !credentials.email || !credentials.password) return null;
@@ -98,6 +99,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 const user = await validateUser(credentials.email as string, credentials.password as string);
 
                 if (!user) return null;
+
+                if (credentials.role) {
+                    (user as any).role = credentials.role;
+                }
 
                 return user;
             },
